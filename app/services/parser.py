@@ -5,10 +5,11 @@ from PyPDF2 import PdfReader
 
 class FileParser:
     @staticmethod
-    def parse_file(file_contents: bytes, filename: str) -> dict:
+    def parse_file(file_contents: bytes, filename: str) -> str:
         """Parse PDF or DOCX file and return text content"""
         if filename.endswith('.pdf'):
             return FileParser._parse_pdf(file_contents)
+        
         if filename.endswith('.docx'):
             return FileParser._parse_docx(file_contents)
         else:
