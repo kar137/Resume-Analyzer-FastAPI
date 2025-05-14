@@ -1,5 +1,7 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse
+from app.models.resume import ResumeAnalysis
+from app.services.analyzer import analyze_resume
 
 app = FastAPI(title="Resume Analyzer API")
 
@@ -11,19 +13,14 @@ def read_root():
 def health_check():
     return {"status": "healthy"}
 
-@app.post("/upload")
+@app.post("/upload", response_model=ResumeAnalysis)
 async def upload_resume(file: UploadFile = File(...)):
     """Endpoint to upload resume files"""
-            
     try:
         contents = await file.read()
-        return JSONResponse(
-            content={
-                "filename": file.filename,
-                "size": len(contents),
-                "message": "File uploaded successfully"
-            }
-        )
+        analysis = analyze_resume(contents, file.filename)
+        return analysis
+    
     except Exception as e:
         return JSONResponse(
             content={"error": str(e)},

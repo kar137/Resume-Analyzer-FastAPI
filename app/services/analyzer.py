@@ -1,4 +1,4 @@
-def analyze_resume(filecontents:bytes, filename:str) -> dict:
+def analyze_resume(filecontents:bytes, filename:str | None) -> dict:
     """Basic resume analyzer"""
     text = filecontents.decode('utf-8')  # text extraction from document
     word_count = len(text.split())
