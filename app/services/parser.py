@@ -1,5 +1,4 @@
 from io import BytesIO
-from typing import Union
 import docx
 from PyPDF2 import PdfReader
 
@@ -39,4 +38,3 @@ class FileParser:
         
         except Exception as e:
             raise ValueError(f"Failed to parse DOCX: {str(e)}")
-        
