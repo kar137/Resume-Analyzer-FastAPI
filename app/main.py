@@ -7,16 +7,18 @@ import json
 import os
 from pathlib import Path
 from typing import Dict, Any, Union
+from app.db.database import init_db
 
 app = FastAPI(title="Resume Analyzer API")
+
+@app.on_event("startup")
+async def startup():
+    init_db()
 
 @app.get("/")
 def read_root():
     return {"message": "Resume Analyzer API is running"}
 
-@app.get("/health")
-def health_check():
-    return {"status": "healthy"}
 
 RESULTS_DIR = Path("Results")
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
