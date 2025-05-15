@@ -13,7 +13,7 @@ def detect_skills(text: str) -> list[str]:
     for category, keywords in TECH_SKILLS.items():
         for keyword in keywords:
             if keyword in text_lower:
-                detected.add(category)
+                detected.add(keyword)
                 break  # Only need one match per category
     
     return sorted(list(detected))

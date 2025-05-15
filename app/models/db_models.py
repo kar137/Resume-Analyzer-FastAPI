@@ -4,11 +4,11 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
-class ResumeAnalysis(Base):
+class ResumeAnalyses(Base):
     __tablename__ = "Resume_analysis"
     id = Column(String, primary_key=True, index= True )
-    origin_filename = Column(String)
-    status = Column(String)  # "processing", "completed", "failed"
+    original_filename = Column(String)
+    status = Column(String, default="pending")  # "processing", "completed", "failed"
     word_count = Column(Integer)
     skills = Column(JSON)  # Stores list of skills as JSON
     raw_content = Column(String)  # Stores extracted text

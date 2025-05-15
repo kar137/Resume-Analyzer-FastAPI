@@ -1,6 +1,7 @@
-from fastapi import FastAPI, UploadFile, File, BackgroundTasks, HTTPException
+from fastapi import FastAPI, UploadFile, File, BackgroundTasks, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from app.models.resume import ResumeAnalysis
+from app.models.db_models import ResumeAnalyses
 from app.services.analyzer import analyze_resume
 import uuid
 import json
@@ -8,6 +9,8 @@ import os
 from pathlib import Path
 from typing import Dict, Any, Union
 from app.db.database import init_db
+from sqlalchemy.orm import Session
+from app.db.database import SessionLocal
 
 app = FastAPI(title="Resume Analyzer API")
 
@@ -26,15 +29,31 @@ ALLOWED_FILE_TYPES = {'.pdf', '.docx'}
 
 RESULTS_DIR.mkdir(exist_ok=True)
 
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 @app.post("/upload", response_model=None)
 async def upload_resume(
     background_tasks: BackgroundTasks, 
-    file: UploadFile = File(...)
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db)
 ):
     """
     Upload a resume for analysis with improved error handling and validation.
     """
     analysis_id = str(uuid.uuid4())
+
+    db_record = ResumeAnalyses(
+        id=analysis_id,
+        status="processing",
+        original_filename=file.filename
+    )
+    db.add(db_record)
+    db.commit()
 
     try:
         if not file.filename:
@@ -59,6 +78,14 @@ async def upload_resume(
         # Read and analyze file
         contents = await file.read()
         analysis = analyze_resume(contents, file.filename)
+        db_record = db.query(ResumeAnalyses).filter(ResumeAnalyses.id == analysis_id).first()
+        if db_record:
+            db_record.status = analysis.get("status", "completed")
+            db_record.word_count = analysis.get("word_count")
+            db_record.skills = analysis.get("skills", [])
+            db_record.raw_content = analysis.get("raw_content", "")
+            db_record.analysis_result = analysis
+            db.commit()
         
         # Add analysis metadata
         analysis.update({
@@ -70,8 +97,9 @@ async def upload_resume(
         # Save in background
         background_tasks.add_task(
             save_analysis_to_file,
-            analysis=analysis,
-            analysis_id=analysis_id
+            analysis,
+            analysis_id,
+            db
         )
 
         return {
@@ -88,18 +116,13 @@ async def upload_resume(
     except Exception as e:
         # Log the error (you should add proper logging here)
         print(f"Error processing file: {str(e)}")
-        return JSONResponse(
-            status_code=500,
-            content={
-                "error": "Failed to process resume",
-                "details": str(e),
-                "id": analysis_id,
-                "status": "failed"
-            }
-        )
+        db_record.status = "failed"
+        db_record.analysis_result = {"error": str(e)}
+        db.commit()
+        raise HTTPException(500, detail=str(e))
 
     
-def save_analysis_to_file(analysis: Dict[str, Any], analysis_id: str) -> None:
+def save_analysis_to_file(analysis: Dict[str, Any], analysis_id: str, db: Session) -> None:
     """
     Save analysis result to a JSON file.
     
@@ -128,7 +151,7 @@ def save_analysis_to_file(analysis: Dict[str, Any], analysis_id: str) -> None:
 
     
 @app.get("/result/{analysis_id}", response_model=None)
-def get_result(analysis_id: str):
+def get_result(analysis_id: str, db: Session = Depends(get_db)):
     """
     Retrieve analysis results by ID.
     
@@ -138,37 +161,13 @@ def get_result(analysis_id: str):
     Returns:
     - The analysis results or error message
     """
-    try:
-        # Validate analysis_id format
-        try:
-            uuid.UUID(analysis_id)
-        except ValueError:
-            raise HTTPException(
-                status_code=400,
-                detail="Invalid analysis ID format"
-            )
-
-        filepath = RESULTS_DIR/ f"{analysis_id}.json"
-
-        if not filepath.exists():
-            return JSONResponse(
-                status_code=404,
-                content= {"error": "Analysis not found."}
-                
-            )
-        with open(filepath, "r") as f:
-            result = json.load(f)
-        
-        return {
-                **result,
-                "status": "completed"
-            }
-
-    except HTTPException:
-        raise
-        
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to retrieve analysis: {str(e)}"
-        )
+    db_record = db.query(ResumeAnalyses).filter(ResumeAnalyses.id == analysis_id).first()
+    
+    if db_record.status != "completed":
+        return {"status": db_record.status, "id": analysis_id}
+    
+    if not db_record:
+        raise HTTPException(404, detail="Analysis not found")
+    
+    
+    return db_record.to_dict()
