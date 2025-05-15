@@ -1,5 +1,5 @@
 from app.services.parser import FileParser
-
+from app.services.skills_db import detect_skills
 from app.services.parser import FileParser
 
 def analyze_resume(file_contents: bytes, filename: str) -> dict:
@@ -10,13 +10,7 @@ def analyze_resume(file_contents: bytes, filename: str) -> dict:
 
         word_count = len(text.split())
         
-        skills = []
-        if "python" in text.lower():
-            skills.append("Python")
-        if "fastapi" in text.lower():
-            skills.append("FastAPI")
-        if "sql" in text.lower():
-            skills.append("SQL")
+        skills = detect_skills(text)
         
         return {
             "filename": filename,
