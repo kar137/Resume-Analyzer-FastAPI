@@ -1,6 +1,6 @@
 from io import BytesIO
 import docx
-from PyPDF2 import PdfReader
+from pypdf import PdfReader
 
 class FileParser:
     @staticmethod
