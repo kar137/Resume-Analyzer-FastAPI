@@ -10,10 +10,8 @@ A microservice built with **FastAPI** that analyzes resumes (PDF/DOCX), extracts
 - 🧠 Analyze resume content to extract:
   - Detected skills
   - Word/sentence count
-  - Optional: Sentiment of career summary
 - 🔄 Background processing using FastAPI’s `BackgroundTasks`
 - ⚡ Async endpoints and DB operations
-- 🗃️ Redis (optional) for caching results
 - 🧪 Pytest-based test coverage
 - 🐳 Dockerized with optional Docker Compose
 - 📋 CI/CD with GitHub Actions
@@ -26,8 +24,7 @@ A microservice built with **FastAPI** that analyzes resumes (PDF/DOCX), extracts
 
 - **Python** + **FastAPI**
 - **Pydantic** for config & data validation
-- **SQLAlchemy** or **Tortoise ORM** (async DB)
-- **Redis** (optional caching)
+- **SQLAlchemy** (async DB)
 - **Docker**, **GitHub Actions**, **pytest**, **pre-commit**
 
 ---
@@ -37,19 +34,17 @@ A microservice built with **FastAPI** that analyzes resumes (PDF/DOCX), extracts
 ```
 resume-analyzer-fastapi/
 │
-├── app/
-│   ├── api/                 # Routers
+├── app/                 
 │   ├── core/                # Config, logging, dependencies
-│   ├── services/            # Business logic: parsing, NLP
+│   ├── services/            # Business logic: parsing, analysis
 │   ├── models/              # Pydantic and ORM models
-│   ├── tasks/               # Background task functions
 │   ├── db/                  # DB session and setup
 │   └── main.py              # FastAPI entry point
 │
 ├── tests/                   # Pytest test cases
 ├── .env                     # Environment variables
 ├── Dockerfile
-├── docker-compose.yml       # Optional: Redis/Postgres
+├── docker-compose.yml       
 ├── requirements.txt
 ├── pre-commit-config.yaml
 ├── .github/workflows/       # GitHub Actions
@@ -69,8 +64,8 @@ resume-analyzer-fastapi/
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/yourusername/resume-analyzer-fastapi.git
-cd resume-analyzer-fastapi
+git clone https://github.com/kar137/Resume-Analyzer-FastAPI.git
+cd Resume-Analyzer-FastAPI
 
 # 2. Create virtual environment
 python -m venv venv
@@ -80,7 +75,7 @@ source venv/bin/activate  # or venv\Scripts\activate
 pip install -r requirements.txt
 
 # 4. Set environment variables
-cp .env.example .env
+cp .env.example env
 
 # 5. Run the app
 uvicorn app.main:app --reload
@@ -108,8 +103,7 @@ pytest
 | Method | Endpoint         | Description                  |
 |--------|------------------|------------------------------|
 | POST   | `/upload/`       | Upload a resume for analysis |
-| GET    | `/result/{id}`   | Fetch analyzed data by ID    |
-| GET    | `/health`        | Health check                 |
+| GET    | `/result/{analysis_id}`   | Fetch analyzed data by ID    |
 
 Open Swagger Docs at:  
 **`http://localhost:8000/docs`**
@@ -135,7 +129,7 @@ Open Swagger Docs at:
 |------------------|------------------------------------------------------------------|
 | Config           | `.env` + `pydantic.BaseSettings`                                 |
 | Dependencies     | Defined in `requirements.txt`                                    |
-| Backing services | Redis/PostgreSQL via Docker Compose                              |
+| Backing services | Docker Compose                              |
 | Dev/prod parity  | Docker enables consistent environments                           |
 | Logs             | Configurable logging using Python `logging` module               |
 | Admin processes  | CLI scripts or FastAPI endpoints (e.g., DB init, cache clear)    |
