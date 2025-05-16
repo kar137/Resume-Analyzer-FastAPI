@@ -1,6 +1,6 @@
 # Resume Analyzer API (FastAPI)
 
-A microservice built with **FastAPI** that analyzes resumes (PDF/DOCX), extracts skills, and provides career insights using NLP techniques. This project demonstrates modern backend practices and applies the **12-Factor App** principles.
+A microservice built with **FastAPI** that analyzes resumes (PDF/DOCX) and extracts skills. This project demonstrates modern backend practices and applies the **12-Factor App** principles.
 
 ---
 
@@ -138,7 +138,7 @@ Open Swagger Docs at:
 
 ## 📸 Demo
 
-
+https://youtu.be/GumG3kizIaI
 ---
 
 ## 👨‍💻 Author
