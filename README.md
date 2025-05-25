@@ -4,6 +4,22 @@ A microservice built with **FastAPI** that analyzes resumes (PDF/DOCX) and extra
 
 ---
 
+## 👨‍💻 Tech Stack Used
+
+<p align="center">
+  <img src="https://img.shields.io/badge/-FastAPI-009688?logo=fastapi&logoColor=white&style=for-the-badge" />
+  <img src="https://img.shields.io/badge/-Python-3776AB?logo=python&logoColor=fff&style=for-the-badge" />
+  <img src="https://img.shields.io/badge/-Pydantic-0A0A0A?logo=pydantic&logoColor=white&style=for-the-badge" />
+  <img src="https://img.shields.io/badge/-SQLAlchemy-CC0000?logo=sqlalchemy&logoColor=white&style=for-the-badge" />
+  <img src="https://img.shields.io/badge/-AsyncIO-3776AB?logo=python&logoColor=white&style=for-the-badge" />
+  <img src="https://img.shields.io/badge/-Docker-2496ED?logo=docker&logoColor=white&style=for-the-badge" />
+  <img src="https://img.shields.io/badge/-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white&style=for-the-badge" />
+  <img src="https://img.shields.io/badge/-pytest-0A0A0A?logo=pytest&logoColor=white&style=for-the-badge" />
+
+</p>
+
+---
+
 ## 🚀 Features
 
 - 📄 Upload PDF or DOCX resumes
@@ -20,14 +36,6 @@ A microservice built with **FastAPI** that analyzes resumes (PDF/DOCX) and extra
 
 ---
 
-## 🏗️ Tech Stack
-
-- **Python** + **FastAPI**
-- **Pydantic** for config & data validation
-- **SQLAlchemy** (async DB)
-- **Docker**, **GitHub Actions**, **pytest**, **pre-commit**
-
----
 
 ## 📁 Project Structure
 
@@ -46,7 +54,6 @@ resume-analyzer-fastapi/
 ├── Dockerfile
 ├── docker-compose.yml       
 ├── requirements.txt
-├── pre-commit-config.yaml
 ├── .github/workflows/       # GitHub Actions
 └── README.md
 ```
